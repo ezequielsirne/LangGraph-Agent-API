@@ -1,30 +1,31 @@
-import os
-import pinecone
-from langchain.vectorstores import Pinecone
-from langchain.embeddings.openai import OpenAIEmbeddings
-from dotenv import load_dotenv
+from pinecone import Pinecone, ServerlessSpec
+from langchain_community.vectorstores import Pinecone as LangchainPinecone
+from langchain_openai import OpenAIEmbeddings
+from src.config.settings import settings  # Importamos la configuración centralizada
 
-# Cargar variables de entorno
-load_dotenv()
+# Create Pinecone client using settings
+pc = Pinecone(api_key=settings.pinecone_api_key)
 
-# Configurar API Key y entorno de Pinecone
-pinecone.init(api_key=os.getenv("PINECONE_API_KEY"), environment=os.getenv("PINECONE_ENVIRONMENT"))
+# Index name from settings
+index_name = settings.pinecone_index_name
 
-# Nombre del índice en Pinecone
-index_name = os.getenv("PINECONE_INDEX_NAME", "langgraph-agent-api")
+# Check if index exists; if not, create it
+if index_name not in pc.list_indexes().names():
+    pc.create_index(
+        name=index_name,
+        dimension=1536,
+        metric="cosine",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")
+    )
 
-# Verificar si el índice ya existe, si no, crearlo
-if index_name not in pinecone.list_indexes():
-    pinecone.create_index(name=index_name, dimension=1536, metric="cosine")
-
-# Conectar al índice existente
-embedding_model = OpenAIEmbeddings()
-vector_db = Pinecone.from_existing_index(index_name=index_name, embedding=embedding_model)
+# Connect to the existing index using the correct embedding model from settings
+embedding_model = OpenAIEmbeddings(model=settings.embedding_model)
+vector_db = LangchainPinecone.from_existing_index(index_name=index_name, embedding=embedding_model)
 
 def add_documents_to_pinecone(documents):
-    """ Agrega documentos a Pinecone. """
+    """Add documents to Pinecone."""
     vector_db.add_documents(documents)
 
 def get_retriever():
-    """ Retorna el retriever para búsqueda en Pinecone. """
+    """Return the retriever for searching in Pinecone."""
     return vector_db.as_retriever()
