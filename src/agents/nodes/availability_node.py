@@ -6,9 +6,10 @@ from langchain_openai import ChatOpenAI
 from src.agents.schemas import AvailabilityInput
 from src.agents.tools import check_availability
 from src.agents.state import GraphState
+from src.config.settings import settings
 
 # Set up the LLM and the output parser
-llm = ChatOpenAI(model="gpt-4", temperature=0)
+llm = ChatOpenAI(model=settings.model, temperature=0)
 parser = PydanticOutputParser(pydantic_object=AvailabilityInput)
 
 # Prompt template for extracting reservation dates from user messages

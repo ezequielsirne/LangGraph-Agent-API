@@ -4,9 +4,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 from langchain_openai import ChatOpenAI
 from src.agents.state import GraphState
+from src.config.settings import settings
 
 # LLM configuration
-llm = ChatOpenAI(model="gpt-4", temperature=0)
+llm = ChatOpenAI(model=settings.model, temperature=0)
 
 # Prompt template with dynamic language and contextual memory
 response_prompt = ChatPromptTemplate.from_messages([

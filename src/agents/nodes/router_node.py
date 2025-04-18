@@ -4,6 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableLambda
 from typing import Literal
 from src.agents.state import GraphState
+from src.config.settings import settings
 
 # Simple routing prompt
 router_prompt = ChatPromptTemplate.from_messages([
@@ -20,7 +21,7 @@ router_prompt = ChatPromptTemplate.from_messages([
 ])
 
 # LLM setup
-llm = ChatOpenAI(model="gpt-4", temperature=0)
+llm = ChatOpenAI(model=settings.model, temperature=0)
 
 # Simple output parser (ensures clean routing decision)
 output_parser = StrOutputParser()
