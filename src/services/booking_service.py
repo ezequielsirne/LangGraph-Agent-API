@@ -17,7 +17,6 @@ class BookingService:
         response = self.session.post(url, json=payload)
         
         print("Payload sent:", payload)
-        print("API response:", response.json())
 
         if response.status_code == 200 and response.json().get("isSuccess"):
             self.token = response.json()["result"]["token"]
