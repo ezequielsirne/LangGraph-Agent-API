@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Ejecutar módulo src.agents.graph",
+        "type": "python",
+        "request": "launch",
+        "module": "src.agents.chat_terminal",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}"
+      }
+    ]
+  }
+  

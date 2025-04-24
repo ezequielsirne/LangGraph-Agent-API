@@ -4,7 +4,8 @@ from typing import Optional, List
 
 class GraphState(BaseModel):
     chat_memory: ChatMessageHistory = Field(default_factory=ChatMessageHistory)
-    user_question: Optional[str] = None
+    user_input: Optional[str] = None
+    next_node: Optional[str] = None
     retrieved_documents: Optional[List[str]] = None
-    availability_response: Optional[dict] = None
+    availability: Optional[dict] = None
     final_answer: Optional[str] = None

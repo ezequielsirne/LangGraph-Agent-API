@@ -31,11 +31,12 @@ graph.add_node("both_node", both_node_runnable)
 # Define conditional routing logic from the router
 graph.add_conditional_edges(
     "router",
+    lambda state: state.next_node,
     {
-        "info_node": info_node_runnable,
-        "availability_node": availability_node_runnable,
-        "both_node": both_node_runnable,
-        "end": response_node_runnable
+        "info_node": "info_node",
+        "availability_node": "availability_node",
+        "both_node": "both_node",
+        "end": "response_node"
     }
 )
 
@@ -49,7 +50,11 @@ graph.set_entry_point("router")
 graph.set_finish_point("response_node")
 
 # Compile the graph to make it executable
-compiled_graph = graph.compile()
+graph_runnable = graph.compile()
 
-# Print the graph structure in ASCII format to visualize it
-print(compiled_graph.get_graph().draw_ascii())
+
+
+if __name__ == "__main__":
+    # Print the graph structure in a human-readable format
+    print("Graph structure:")
+    print(graph_runnable.get_graph().draw_ascii())  

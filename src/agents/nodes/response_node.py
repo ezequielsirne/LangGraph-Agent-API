@@ -20,16 +20,16 @@ response_prompt = ChatPromptTemplate.from_messages([
 ])
 
 def response_node(state: GraphState) -> GraphState:
-    user_input = state["user_input"]
+    user_input = state.user_input
 
     # Build context from info and availability
     context_parts = []
 
-    if state.get("info_docs"):
-        context_parts.append("Hotel information:\n" + "\n".join(state["info_docs"]))
+    if state.retrieved_documents:
+        context_parts.append("Hotel information:\n" + "\n".join(state.retrieved_documents))
 
-    if state.get("availability"):
-        context_parts.append("Availability:\n" + str(state["availability"]))
+    if state.availability:
+        context_parts.append("Availability:\n" + str(state.availability))
 
     if not context_parts:
         context_parts.append("No additional context available.")
@@ -47,8 +47,8 @@ def response_node(state: GraphState) -> GraphState:
 
     # Update state with assistant response (if needed later)
     return {
-        **state,
-        "assistant_response": reply.content
+        **state.dict(),
+        "final_answer": reply.content
     }
 
 # Runnable version
@@ -57,9 +57,9 @@ response_node_runnable = RunnableLambda(response_node)
 
 if __name__ == "__main__":
     sample_state = {
-        "conversation_history": [],
+        "chat_memory": [],
         "user_input": "¿El desayuno está incluido?",
-        "info_docs": [
+        "retrieved_documents": [
             "El desayuno está incluido en todas las tarifas.",
             "El horario del desayuno es de 8:00 a 10:30 AM."
         ],
@@ -68,4 +68,4 @@ if __name__ == "__main__":
 
     result_state = response_node(sample_state)
     print("Assistant Response:")
-    print(result_state["assistant_response"])
+    print(result_state["final_answer"])

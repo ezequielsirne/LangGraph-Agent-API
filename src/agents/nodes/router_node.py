@@ -30,10 +30,10 @@ output_parser = StrOutputParser()
 router_chain = router_prompt | llm | output_parser
 
 # Node function to use in LangGraph
-def router_node(state: GraphState) -> Literal["info_node", "availability_node", "both_node", "end"]:
-    user_input = state["user_input"]
+def router_node(state: GraphState) -> dict:
+    user_input = state.user_input
     decision = router_chain.invoke({"input": user_input})
-    return decision
+    return {"next_node": decision}
 
 # Runnable for LangGraph
 router_node_runnable = RunnableLambda(router_node)
@@ -48,6 +48,6 @@ if __name__ == "__main__":
     ]
 
     for text in test_inputs:
-        state = {"user_input": text, "conversation_history": [], "info_docs": None, "availability": None}
+        state = {"user_input": text, "chat_memory": [], "retrieved_documents": None, "availability": None}
         print(f"Input: {text}")
         print(f"Route decision: {router_node(state)}")

@@ -31,7 +31,7 @@ Message: "{message}"
 
 # Node for availability lookup
 def availability_node(state: GraphState) -> GraphState:
-    user_input = state["user_input"]
+    user_input = state.user_input
     current_date = datetime.now().strftime("%Y-%m-%d")
 
     # Format the prompt with user input and current date
@@ -53,7 +53,7 @@ def availability_node(state: GraphState) -> GraphState:
 
     # Update the conversation state with availability information and parsed dates
     return {
-        **state,
+        **state.dict(),
         "availability": result,
         "parsed_availability_input": {
             "checkin": availability_input.checkin,
@@ -81,9 +81,9 @@ if __name__ == "__main__":
         try:
             # Simulated state
             fake_state = {
-                "conversation_history": [],
+                "chat_memory": [],
                 "user_input": input_text,
-                "info_docs": None,
+                "retrieved_documents": None,
                 "availability": None
             }
 

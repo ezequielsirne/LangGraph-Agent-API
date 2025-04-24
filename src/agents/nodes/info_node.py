@@ -6,14 +6,14 @@ def info_node(state: GraphState) -> GraphState:
     """
     Retrieves relevant chunks of text from the vector DB based on user input.
     """
-    user_input = state["user_input"]
+    user_input = state.user_input
     retriever = get_retriever()
     docs = retriever.invoke(user_input)
 
     # Save retrieved documents' content in the state
     return {
-        **state,
-        "info_docs": [doc.page_content for doc in docs]
+        **state.dict(),
+        "retrieved_documents": [doc.page_content for doc in docs]
     }
 
 info_node_runnable = RunnableLambda(info_node)
@@ -31,9 +31,9 @@ if __name__ == "__main__":
         print(f"\nTest #{idx}")
         try:
             fake_state = {
-                "conversation_history": [],
+                "chat_memory": [],
                 "user_input": input_text,
-                "info_docs": None,
+                "retrieved_documents": None,
                 "availability": None,
             }
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
             print("User input:", input_text)
             print("Retrieved documents:")
-            for i, doc in enumerate(updated_state["info_docs"], 1):
+            for i, doc in enumerate(updated_state["retrieved_documents"], 1):
                 print(f"- Chunk #{i}:\n{doc[:250]}...\n")
 
         except Exception as e:
