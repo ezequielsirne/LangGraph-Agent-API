@@ -1,0 +1,12 @@
+# .dockerignore
+.git
+.gitignore
+__pycache__/
+*.py[cod]
+*.log
+*.sqlite3
+*.db
+.env
+.vscode/
+.idea/
+data/embeddings/          # heavy locally‑cached vectors (re‑build in prod)
