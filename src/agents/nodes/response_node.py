@@ -12,6 +12,8 @@ import langchain_core.messages as core_msgs
 from src.agents.state import GraphState
 from src.config.settings import settings
 
+from langdetect import detect 
+
 # ── LLM config ────────────────────────────────────────────────────────────────
 llm = ChatOpenAI(model=settings.model, temperature=0)
 
@@ -54,10 +56,30 @@ def response_node(state: GraphState) -> Dict[str, Any]:
 
     context = "\n\n".join(parts)
 
-    # Assemble message list (schema types only)
+    # Detect the ISO‑639 language code of the latest user input
+    # Examples:  'en' → English,  'es' → Spanish,  'pt' → Portuguese
+    user_lang = detect(state.user_input)
+
+    # Build a clear, unambiguous instruction for the LLM
+    # English → force an English reply
+    # Any other language (here we only care about Spanish) → force Spanish
+    if user_lang.startswith("en"):
+        lang_instruction = (
+            "Respond in English. Do not switch to any other language."
+        )
+    else:
+        lang_instruction = (
+            "Responde únicamente en español. No uses otro idioma."
+        )
+
+    # ----- Assemble the final message list sent to the LLM -----
     messages: List[BaseMessage] = [
-        SystemMessage(content=SYSTEM_TEMPLATE.format(context=context))
+        # System prompt with RAG / availability context
+        SystemMessage(content=SYSTEM_TEMPLATE.format(context=context)),
+        # Language‑reinforcement system message (inserted after context)
+        SystemMessage(content=lang_instruction),
     ]
+
     if state.chat_memory:
         messages.extend(_core_to_schema(m) for m in state.chat_memory.messages)
     
