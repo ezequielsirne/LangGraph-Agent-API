@@ -8,15 +8,20 @@ from src.agents.nodes.info_node import info_node_runnable
 from src.agents.nodes.availability_node import availability_node_runnable
 from src.agents.nodes.response_node import response_node_runnable
 
+# Util
+from src.agents.utils.merge import merge_parallel_results
+
 # Wrap router logic in a RunnableLambda
 router_node_runnable = RunnableLambda(router_node)
 
 # Create a parallel runnable for 'both_node' execution
 # This will run info and availability nodes in parallel
-both_node_runnable = RunnableParallel({
-    "info_node": info_node_runnable,
-    "availability_node": availability_node_runnable
-}).with_config(run_name="both_node")
+parallel_branches = RunnableParallel(
+    info_node=info_node_runnable,
+    availability_node=availability_node_runnable,
+).with_config(run_name="both_branches")
+
+both_node_runnable = parallel_branches | RunnableLambda(merge_parallel_results)
 
 # Build the state graph
 graph = StateGraph(GraphState)
