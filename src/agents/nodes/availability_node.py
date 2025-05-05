@@ -7,6 +7,7 @@ from src.agents.schemas import AvailabilityInput
 from src.agents.tools import check_availability
 from src.agents.state import GraphState
 from src.config.settings import settings
+from langchain_core.chat_history import InMemoryChatMessageHistory
 
 # Set up the LLM and the output parser
 llm = ChatOpenAI(model=settings.model, temperature=0)
@@ -67,6 +68,8 @@ availability_node_runnable = RunnableLambda(availability_node)
 # Simple test runner for development purposes
 if __name__ == "__main__":
     import json
+    import warnings
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
 
     test_inputs = [
         "¿Hay disponibilidad para el próximo fin de semana?",
@@ -78,23 +81,23 @@ if __name__ == "__main__":
 
     for idx, input_text in enumerate(test_inputs, 1):
         print(f"\nTest #{idx}")
+
+        # Build a minimal GraphState instance expected by availability_node
+        fake_state = GraphState(
+            chat_memory=InMemoryChatMessageHistory(),
+            user_input=input_text,
+            retrieved_documents=None,
+            availability=None,
+        )
+
         try:
-            # Simulated state
-            fake_state = {
-                "chat_memory": [],
-                "user_input": input_text,
-                "retrieved_documents": None,
-                "availability": None
-            }
+            # availability_node returns a dict, not a GraphState
+            result = availability_node(fake_state)
 
-            # Run the node
-            updated_state = availability_node(fake_state)
-
-            # Print the output
             print("User input:", input_text)
-            print("Parsed dates:", updated_state["parsed_availability_input"])
+            print("Parsed dates:", result.get("parsed_availability_input"))
             print("Availability output:")
-            print(json.dumps(updated_state["availability"], indent=2))
+            print(json.dumps(result.get("availability"), indent=2, ensure_ascii=False))
 
         except Exception as e:
             print(f"Error in test #{idx}: {e}")
