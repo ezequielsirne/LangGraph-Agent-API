@@ -98,7 +98,7 @@ Dockerfile            # local docker build (Streamlit Cloud ignores this)
 
 ```bash
 # 1. clone repo
-git clone https://github.com/<you>/LangGraph-Agent-API.git
+git clone https://github.com/ezequielsirne/LangGraph-Agent-API.git
 cd LangGraph-Agent-API
 
 # 2. create venv & install deps
