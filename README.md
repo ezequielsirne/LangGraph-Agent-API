@@ -1,7 +1,7 @@
 # La Rosalina Resort Assistant 👋🛎️
 
 This project is a fully bilingual (English & Spanish) assistant that demonstrates how a **LangGraph agent** can combine Retrieval‑Augmented Generation with live tool calls against an existing hotel‑management backend.
-The chatbot can explain services, amenities, check‑in policies, and – crucially – perform **real‑time room‑availability checks** by hitting the Booking REST API I had built previously (Swagger docs: [http://sdtsoftware-001-site14.atempurl.com](http://sdtsoftware-001-site14.atempurl.com)).
+The chatbot can explain services, amenities, check‑in policies, and – crucially – perform **real‑time room‑availability checks** by hitting the Booking REST API I had built previously (Swagger docs: [http://sdtsoftware-001-site14.atempurl.com/swagger](http://sdtsoftware-001-site14.atempurl.com/swagger)).
 All reasoning, retrieval, and tool‑use steps are orchestrated inside a single stateful LangGraph workflow.
 
 ## 🌐 Public demo
